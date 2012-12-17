@@ -1,6 +1,6 @@
 # Photo Organizer
 
-A small command line tool created to organize photos of a given source path to a destination path on /year/month/yyyymmddhhmmss.ext format.
+A small command line tool created to organize photos of a given source path to a destination path on /year/month/yyyymmddhhmm.ext format.
 It uses EXIF photo creation date with a fallback to mdate to create the new file path.
 
 ### Requirements
