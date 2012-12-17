@@ -9,40 +9,36 @@ require "./lib/photo"
 
 class PhotoOrganizer
 
-  def initialize(source_dir, destination_dir, tmp_file_folder="/tmp/fileutils")
+  def initialize(source_dir, destination_dir)
+    source_dir << "#{File::SEPARATOR}" if source_dir[-1] != "#{File::SEPARATOR}"
+    destination_dir << "#{File::SEPARATOR}" if destination_dir[-1] != "#{File::SEPARATOR}"
     @source_dir = source_dir
     @destination_dir = destination_dir
-    @tmp_file_folder = tmp_file_folder
+    @metadata_base_folder = "#{destination_dir}.photo_organizer_metadata#{
+File::SEPARATOR}"
     @photo_extensions = ['.jpg', '.jpeg']
   end
 
   def run
-    at_exit {
-      remove_tmp_file_folder @tmp_file_folder
-    }
-
-    create_tmp_file_folder @tmp_file_folder
-
     OSWalk.new(@source_dir).walk_files(@photo_extensions).each do |photo_path|
       copy_photo_to_destination_dir Photo.new(photo_path)
     end
-
-    remove_tmp_file_folder @tmp_file_folder
-
   end
 
   private
-  def create_tmp_file_folder(path)
-    FileUtils.mkdir_p path
-  end
 
-  def remove_tmp_file_folder(path)
-    FileUtils.rm_rf path
+  def metadata_folder(photo_md5sum)
+    "#{photo_md5sum[0]}#{File::SEPARATOR}#{photo_md5sum[1]}#{File::SEPARATOR
+    }#{photo_md5sum[2]}#{File::SEPARATOR}#{photo_md5sum[3]}#{File::SEPARATOR
+    }#{photo_md5sum[4]}#{File::SEPARATOR}"
   end
 
   def photo_duplicated?(photo)
-    check_file = "#{@tmp_file_folder}#{File::SEPARATOR}#{
-      Digest::MD5.file(photo.full_path).hexdigest}"
+    photo_md5sum = Digest::MD5.file(photo.full_path).hexdigest
+    check_path = "#{@metadata_base_folder}#{metadata_folder(photo_md5sum)}"
+    FileUtils.mkdir_p check_path
+
+    check_file = "#{check_path}#{photo_md5sum}"
     ret = true
 
     unless File.exists? check_file
@@ -54,20 +50,20 @@ class PhotoOrganizer
   end
 
   def copy_photo_to_destination_dir(photo)
-    dest_full_path = "#{@destination_dir}#{File::SEPARATOR}#{File::SEPARATOR}#{
+    dest_full_path = "#{@destination_dir}#{
       photo.creation_datetime.year}#{File::SEPARATOR}#{photo.creation_datetime
-      .month}"
+      .month}#{File::SEPARATOR}"
 
     if photo_duplicated? photo
-      dest_full_path = "#{@destination_dir}#{File::SEPARATOR}duplicated#{
+      dest_full_path = "#{@destination_dir}duplicated#{
         File::SEPARATOR}#{photo.creation_datetime.year}#{File::SEPARATOR}#{
-        photo.creation_datetime.month}"
+        photo.creation_datetime.month}#{File::SEPARATOR}"
     end
 
     FileUtils.mkdir_p dest_full_path
-    FileUtils.mv photo.full_path, "#{dest_full_path}#{File::SEPARATOR}#{
+    FileUtils.mv photo.full_path, "#{dest_full_path}#{
       photo.creation_datetime.strftime("%Y%m%dT%H%M")}.jpg"
   end
 end
 
-PhotoOrganizer.new(ARGV[0], ARGV[1]).run
+PhotoOrganizer.new(ARGV[0].dup, ARGV[1].dup).run
