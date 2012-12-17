@@ -16,14 +16,6 @@ class PhotoOrganizer
     @photo_extensions = ['.jpg', '.jpeg']
   end
 
-  def create_tmp_file_folder(path)
-    FileUtils.mkdir_p path
-  end
-
-  def remove_tmp_file_folder(path)
-    FileUtils.rm_rf path
-  end
-
   def run
     at_exit {
       remove_tmp_file_folder @tmp_file_folder
@@ -32,7 +24,7 @@ class PhotoOrganizer
     create_tmp_file_folder @tmp_file_folder
 
     OSWalk.new(@source_dir).walk_files(@photo_extensions).each do |photo_path|
-      copy_to_destination_dir Photo.new(photo_path)
+      copy_photo_to_destination_dir Photo.new(photo_path)
     end
 
     remove_tmp_file_folder @tmp_file_folder
@@ -40,7 +32,15 @@ class PhotoOrganizer
   end
 
   private
-  def duplicated?(photo)
+  def create_tmp_file_folder(path)
+    FileUtils.mkdir_p path
+  end
+
+  def remove_tmp_file_folder(path)
+    FileUtils.rm_rf path
+  end
+
+  def photo_duplicated?(photo)
     check_file = "#{@tmp_file_folder}#{File::SEPARATOR}#{
       Digest::MD5.file(photo.full_path).hexdigest}"
     ret = true
@@ -53,13 +53,12 @@ class PhotoOrganizer
     ret
   end
 
-  def copy_to_destination_dir(photo)
-
+  def copy_photo_to_destination_dir(photo)
     dest_full_path = "#{@destination_dir}#{File::SEPARATOR}#{File::SEPARATOR}#{
       photo.creation_datetime.year}#{File::SEPARATOR}#{photo.creation_datetime
       .month}"
 
-    if duplicated? photo
+    if photo_duplicated? photo
       dest_full_path = "#{@destination_dir}#{File::SEPARATOR}duplicated#{
         File::SEPARATOR}#{photo.creation_datetime.year}#{File::SEPARATOR}#{
         photo.creation_datetime.month}"
