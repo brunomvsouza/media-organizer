@@ -7,6 +7,7 @@ class OSWalk
   def walk_files(ext_filter=[])
     filtered_files = []
     self.walk[:files].each do |file|
+      p file
       filtered_files << file if ext_filter.include? file.extname.downcase
     end
     filtered_files

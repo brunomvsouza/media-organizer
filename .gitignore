@@ -3,3 +3,6 @@
 
 # RubyMine IDE
 .idea
+
+# Ruby stuff
+*.lock
