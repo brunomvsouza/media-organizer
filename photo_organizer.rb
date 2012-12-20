@@ -28,9 +28,7 @@ File::SEPARATOR}"
   private
 
   def metadata_folder(photo_md5sum)
-    "#{photo_md5sum[0]}#{File::SEPARATOR}#{photo_md5sum[1]}#{File::SEPARATOR
-    }#{photo_md5sum[2]}#{File::SEPARATOR}#{photo_md5sum[3]}#{File::SEPARATOR
-    }#{photo_md5sum[4]}#{File::SEPARATOR}"
+    "#{photo_md5sum[0]}#{File::SEPARATOR}"
   end
 
   def photo_duplicated?(photo)
