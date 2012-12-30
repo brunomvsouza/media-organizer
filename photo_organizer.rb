@@ -4,6 +4,7 @@ require "pathname"
 require "fileutils"
 require "digest"
 require "exifr"
+require "date"
 require "./lib/os_walk"
 require "./lib/photo"
 
