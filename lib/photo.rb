@@ -18,6 +18,11 @@ class Photo
 
   def creation_datetime
     p @pathname.to_s
+
+    unless ['.jpg', 'jpeg'].include? ext
+      return @pathname.mtime
+    end
+
     exif_file = EXIFR::JPEG.new @pathname.to_s
     # TODO Refatorar esses ifs feios :/
     if exif_file.exif? and not exif_file.date_time.to_s.empty?

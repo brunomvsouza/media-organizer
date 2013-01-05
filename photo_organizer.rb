@@ -17,7 +17,7 @@ class PhotoOrganizer
     @destination_dir = destination_dir
     @metadata_base_folder = "#{destination_dir}.photo_organizer_metadata#{
 File::SEPARATOR}"
-    @photo_extensions = ['.jpg', '.jpeg']
+    @photo_extensions = ['.jpg', '.jpeg', '.png', '.gif']
   end
 
   def run
@@ -61,7 +61,7 @@ File::SEPARATOR}"
 
     FileUtils.mkdir_p dest_full_path
     FileUtils.mv photo.full_path, "#{dest_full_path}#{
-      photo.creation_datetime.strftime("%Y%m%dT%H%M")}.jpg"
+      photo.creation_datetime.strftime("%Y%m%dT%H%M")}#{photo.ext}"
   end
 end
 
