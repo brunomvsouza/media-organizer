@@ -16,7 +16,7 @@ class VideoOrganizer
     @destination_dir = destination_dir
     @metadata_base_folder = "#{destination_dir}.video_organizer_metadata#{
     File::SEPARATOR}"
-    @video_extensions = ['.mp4', '.mov', '.3gp']
+    @video_extensions = ['.mp4', '.mov', '.3gp', '.flv', '.wmv', '.avi', '.wav', '.mpg', '.swf', '.ogg']
   end
 
   def run

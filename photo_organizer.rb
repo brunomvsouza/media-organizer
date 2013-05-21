@@ -17,7 +17,7 @@ class PhotoOrganizer
     @destination_dir = destination_dir
     @metadata_base_folder = "#{destination_dir}.photo_organizer_metadata#{
 File::SEPARATOR}"
-    @photo_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.psd', '.bmp']
+    @photo_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.psd', '.cdr']
   end
 
   def run
