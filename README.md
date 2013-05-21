@@ -1,6 +1,6 @@
 # Photo Organizer
 
-A small command line tool created to organize photos and videos of a given source path to a destination path on /year/month/yyyymmddhhmm.ext format.
+A small command line tool created to organize photos and videos of a given source path to a destination path on /year/month/20071119T083748-0600_md5md5m.ext format.
 For photos it uses EXIF photo creation date with a fallback to mdate to create the new file path. For videos it just uses mdate to create the new file path.
 
 ### Requirements
@@ -21,4 +21,7 @@ ruby photo_organizer.rb /path/to/source/dir /path/to/destination/dir
 ruby video_organizer.rb /path/to/source/dir /path/to/destination/dir
 ```
 
+## Known bugs
+
+Unfortunately there no standalized way to store photo's capture date and time on EXIF data what causes some issues on creating file names of some camera vendors.
 
