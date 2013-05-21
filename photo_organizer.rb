@@ -17,23 +17,23 @@ class PhotoOrganizer
     @destination_dir = destination_dir
     @metadata_base_folder = "#{destination_dir}.photo_organizer_metadata#{
 File::SEPARATOR}"
-    @photo_extensions = ['.jpg', '.jpeg', '.png', '.gif']
+    @photo_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.psd', '.bmp']
   end
 
   def run
     OSWalk.new(@source_dir).walk_files(@photo_extensions).each do |photo_path|
-      copy_photo_to_destination_dir Photo.new(photo_path)
+      move_photo_to_destination_dir Photo.new(photo_path)
     end
   end
 
   private
 
   def metadata_folder(photo_md5sum)
-    "#{photo_md5sum[0]}#{File::SEPARATOR}"
+    "#{photo_md5sum[0..1]}#{File::SEPARATOR}#{photo_md5sum[2..3]}#{File::SEPARATOR}#{photo_md5sum[4..5]}#{File::SEPARATOR}"
   end
 
   def photo_duplicated?(photo)
-    photo_md5sum = Digest::MD5.file(photo.full_path).hexdigest
+    photo_md5sum = photo.md5sum
     check_path = "#{@metadata_base_folder}#{metadata_folder(photo_md5sum)}"
     FileUtils.mkdir_p check_path
 
@@ -48,7 +48,7 @@ File::SEPARATOR}"
     ret
   end
 
-  def copy_photo_to_destination_dir(photo)
+  def move_photo_to_destination_dir(photo)
     dest_full_path = "#{@destination_dir}#{
       photo.creation_datetime.year}#{File::SEPARATOR}#{photo.creation_datetime
       .month}#{File::SEPARATOR}"
@@ -60,8 +60,12 @@ File::SEPARATOR}"
     end
 
     FileUtils.mkdir_p dest_full_path
+
+    p "#{photo.full_path} -> #{dest_full_path}#{
+    photo.creation_datetime.strftime("%Y%m%dT%H%M%S%z")}_#{photo.md5sum[0..6]}#{photo.ext}"
+
     FileUtils.mv photo.full_path, "#{dest_full_path}#{
-      photo.creation_datetime.strftime("%Y%m%dT%H%M")}#{photo.ext}"
+      photo.creation_datetime.strftime("%Y%m%dT%H%M%S%z")}_#{photo.md5sum[0..6]}#{photo.ext}"
   end
 end
 

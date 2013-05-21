@@ -21,18 +21,18 @@ class VideoOrganizer
 
   def run
     OSWalk.new(@source_dir).walk_files(@video_extensions).each do |video_path|
-      copy_video_to_destination_dir Video.new(video_path)
+      move_video_to_destination_dir Video.new(video_path)
     end
   end
 
   private
 
   def metadata_folder(video_md5sum)
-    "#{video_md5sum[0]}#{File::SEPARATOR}"
+    "#{video_md5sum[0..1]}#{File::SEPARATOR}#{video_md5sum[2..3]}#{File::SEPARATOR}#{video_md5sum[4..5]}#{File::SEPARATOR}"
   end
 
   def video_duplicated?(video)
-    video_md5sum = Digest::MD5.file(video.full_path).hexdigest
+    video_md5sum = video.md5sum
     check_path = "#{@metadata_base_folder}#{metadata_folder(video_md5sum)}"
     FileUtils.mkdir_p check_path
 
@@ -47,10 +47,10 @@ class VideoOrganizer
     ret
   end
 
-  def copy_video_to_destination_dir(video)
+  def move_video_to_destination_dir(video)
     dest_full_path = "#{@destination_dir}#{
-    video.creation_datetime.year}#{File::SEPARATOR}#{video.creation_datetime
-    .month}#{File::SEPARATOR}"
+      video.creation_datetime.year}#{File::SEPARATOR}#{
+      video.creation_datetime.month}#{File::SEPARATOR}"
 
     if video_duplicated? video
       dest_full_path = "#{@destination_dir}duplicated#{
@@ -59,8 +59,12 @@ class VideoOrganizer
     end
 
     FileUtils.mkdir_p dest_full_path
+
+    p "#{video.full_path} -> #{dest_full_path}#{
+      video.creation_datetime.strftime("%Y%m%dT%H%M%S%z")}#{video.ext}"
+
     FileUtils.mv video.full_path, "#{dest_full_path}#{
-    video.creation_datetime.strftime("%Y%m%dT%H%M")}#{video.ext}"
+      video.creation_datetime.strftime("%Y%m%dT%H%M%S%z")}#{video.ext}"
   end
 end
 
